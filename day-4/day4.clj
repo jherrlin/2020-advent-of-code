@@ -1,31 +1,31 @@
 (ns user
   (:require
    [clojure.spec.alpha :as s]
-   [clojure.string :as str]))
+   [clojure.string :refer [split replace blank?]]))
 
-(s/def ::non-blank-string (s/and string? (complement str/blank?)))
-(s/def ::byr #(->> (Integer. %) (s/int-in-range? 1920 2003)))
-(s/def ::iyr #(->> (Integer. %) (s/int-in-range? 2010 2021)))
-(s/def ::eyr #(->> (Integer. %) (s/int-in-range? 2020 2031)))
+(s/def ::non-blank-string (s/and string? (complement blank?)))
+(defn s->in-range [s e v] (->> v Integer. (s/int-in-range? s e)))
+(s/def ::byr #(s->in-range 1920 2003 %))
+(s/def ::iyr #(s->in-range 2010 2021 %))
+(s/def ::eyr #(s->in-range 2020 2031 %))
 (s/def ::hgt
-  (s/or ::cm (s/and string? #(some->> % (re-find #"^(\d{3})cm$") last Integer. (s/int-in-range? 150 194)))
-        ::in (s/and string? #(some->> % (re-find #"^(\d{2})in$") last Integer. (s/int-in-range? 59 77)))))
-(s/def ::hcl (s/and string? #(re-find #"^#[0-9a-f]{6}$" %)))
+  (s/or ::cm #(some->> % (re-find #"^(\d{3})cm$") last (s->in-range 150 194))
+        ::in #(some->> % (re-find #"^(\d{2})in$") last (s->in-range 59 77))))
+(s/def ::hcl #(re-find #"^#[0-9a-f]{6}$" %))
 (s/def ::ecl #{"amb" "blu" "brn" "gry" "grn" "hzl" "oth"})
-(s/def ::pid (s/and string? #(re-find #"^[0-9]{9}$" %)))
+(s/def ::pid #(re-find #"^[0-9]{9}$" %))
 (s/def ::passport
   (s/keys :req-un [::byr ::eyr ::hcl ::hgt ::iyr ::pid ::ecl]))
 
-(->> (str/split (slurp "input.txt") #"\n\n")
-       (map #(-> % (str/replace #"\n" " ") (str/split #"\s")))
-       (mapv (fn [x] (map (fn [y] (str/split y #":")) x)))
-       (map #(reduce (fn [m [k v]] (assoc m (keyword k) v)) {} %))
-       (map #(s/valid? ::passport %))
-       (remove false?)
-       (count))
+(->> (split (slurp "input.txt") #"\n\n")
+     (map #(-> % (replace #"\n" " ") (split #"\s")))
+     (map (fn [x] (reduce #(let [[k v] (split %2 #":")] (assoc %1 (keyword k) v)) {} x)))
+     (map #(s/valid? ::passport %))
+     (remove false?)
+     (count))
 
 
-;; 233 first answer
+
 (def test-valid "pid:087499704 hgt:74in ecl:grn iyr:2012 eyr:2030 byr:1980
 hcl:#623a2f
 
