@@ -1,21 +1,20 @@
 (ns user
   (:require
    [clojure.spec.alpha :as s]
-   [clojure.string :refer [split replace blank?]]))
+   [clojure.string :refer [split replace]]))
 
-(s/def ::non-blank-string (s/and string? (complement blank?)))
 (defn s->in-range [s e v] (->> v Integer. (s/int-in-range? s e)))
 (s/def ::byr #(s->in-range 1920 2003 %))
-(s/def ::iyr #(s->in-range 2010 2021 %))
+(s/def ::ecl #{"amb" "blu" "brn" "gry" "grn" "hzl" "oth"})
 (s/def ::eyr #(s->in-range 2020 2031 %))
+(s/def ::hcl #(re-find #"^#[0-9a-f]{6}$" %))
 (s/def ::hgt
   (s/or ::cm #(some->> % (re-find #"^(\d{3})cm$") last (s->in-range 150 194))
         ::in #(some->> % (re-find #"^(\d{2})in$") last (s->in-range 59 77))))
-(s/def ::hcl #(re-find #"^#[0-9a-f]{6}$" %))
-(s/def ::ecl #{"amb" "blu" "brn" "gry" "grn" "hzl" "oth"})
+(s/def ::iyr #(s->in-range 2010 2021 %))
 (s/def ::pid #(re-find #"^[0-9]{9}$" %))
 (s/def ::passport
-  (s/keys :req-un [::byr ::eyr ::hcl ::hgt ::iyr ::pid ::ecl]))
+  (s/keys :req-un [::byr ::ecl ::eyr ::hcl ::hgt ::iyr ::pid]))
 
 (->> (split (slurp "input.txt") #"\n\n")
      (map #(-> % (replace #"\n" " ") (split #"\s")))
