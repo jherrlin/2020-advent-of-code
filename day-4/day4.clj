@@ -19,7 +19,7 @@
 
 (->> (split (slurp "input.txt") #"\n\n")
      (map #(-> % (replace #"\n" " ") (split #"\s")))
-     (map (fn [x] (reduce #(let [[k v] (split %2 #":")] (assoc %1 (keyword k) v)) {} x)))
+     (map (fn [x] (into {} (map #(let [[k v] (split % #":")] [(keyword k) v]) x))))
      (map #(s/valid? ::passport %))
      (remove false?)
      (count))
