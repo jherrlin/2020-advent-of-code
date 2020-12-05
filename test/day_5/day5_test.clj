@@ -3,23 +3,23 @@
             [clojure.test :as t]))
 
 
-(t/deftest find-row
-  (t/is (= (sut/find-row "BFFFBBF" 0 128)
+(t/deftest find*
+  (t/is (= (sut/find* "BFFFBBF" 0 128)
            70))
 
-  (t/is (= (sut/find-row "FFFBBBF" 0 128)
+  (t/is (= (sut/find* "FFFBBBF" 0 128)
            14))
 
-  (t/is (= (sut/find-row "BBFFBBF" 0 128)
+  (t/is (= (sut/find* "BBFFBBF" 0 128)
            102))
 
-  (t/is (= (sut/find-row "RRR" 0 8)
+  (t/is (= (sut/find* "RRR" 0 8)
            7))
 
-  (t/is (= (sut/find-row "LLL" 0 8)
+  (t/is (= (sut/find* "LLL" 0 8)
            0))
 
-  (t/is (= (sut/find-row "RLL" 0 8)
+  (t/is (= (sut/find* "RLL" 0 8)
            4))
 
   (t/is (= (sut/find-it "BFFFBBFRRR")
