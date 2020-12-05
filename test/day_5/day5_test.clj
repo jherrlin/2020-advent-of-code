@@ -3,7 +3,7 @@
             [clojure.test :as t]))
 
 
-(t/deftest
+(t/deftest find-row
   (t/is (= (sut/find-row "BFFFBBF" 0 128)
            70))
 

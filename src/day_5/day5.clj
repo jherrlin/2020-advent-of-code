@@ -3,7 +3,6 @@
 
 
 
-
 (defn find-row [coll begin end]
   (println "Top:" (seq coll) begin end)
   (cond
@@ -26,35 +25,3 @@
           e (+ (/ end 2) (/ begin 2))]
       (println (first coll) b e)
       (find-row (rest coll) b e))))
-
-
-(println (find-row "BFFFBBF" 0 128))
-(println "----------------")
-(println (find-row "FFFBBBF" 0 128))
-(println "----------------")
-(println (find-row "BBFFBBF" 0 128))
-
-
-
-
-(find-row (seq "BFFFBBF") 1 128)
-
-[coll begin end]
-
-(first (seq "FBFBBFF"))
-(rest (seq "FBFBBFF"))
-
-
-(fn b [begin end] ())
-
-(let [begin 1
-      end   128]
-  [(- end (/ end 2))
-   end]
-  )
-
-(defn b [start end]
-  [start
-   (/ end 2)])
-
-(apply b (b 1 128))
