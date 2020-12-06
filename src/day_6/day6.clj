@@ -6,8 +6,17 @@
      (reduce +))
 
 ;; Second
-(->> (clojure.string/split (slurp "src/day_6/input.txt") #"\n\n")
-     (map #(clojure.string/split % #"\n"))
-     (map (fn [x] (map (fn [y] (set (clojure.string/split y #"")))x)))
-     (map (fn [x] (count (apply clojure.set/intersection x))))
+(use '[clojure.string :only (split)])
+(->> (split (slurp "src/day_6/input.txt") #"\n\n")
+     (map #(for [s (split % #"\n")] (set (split s #""))))
+     (map #(count (apply clojure.set/intersection %)))
      (reduce +))
+
+
+;; Second with a transducer
+(transduce
+ (comp
+  (map #(for [s (split % #"\n")] (set (split s #""))))
+  (map #(count (apply clojure.set/intersection %))))
+ +
+ (split (slurp "src/day_6/input.txt") #"\n\n"))
