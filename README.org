@@ -1,0 +1,4 @@
+#+TITLE: Advent of code 2020
+#+AUTHOR: John Herrlin
+
+In Clojure
