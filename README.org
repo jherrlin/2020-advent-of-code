@@ -2,3 +2,157 @@
 #+AUTHOR: John Herrlin
 
 In Clojure
+
+
+
+#+BEGIN_SRC text :results output code
+  light red bags contain 1 bright white bag, 2 muted yellow bags.
+  dark orange bags contain 3 bright white bags, 4 muted yellow bags.
+  bright white bags contain 1 shiny gold bag.
+  muted yellow bags contain 2 shiny gold bags, 9 faded blue bags.
+  shiny gold bags contain 1 dark olive bag, 2 vibrant plum bags.
+  dark olive bags contain 3 faded blue bags, 4 dotted black bags.
+  vibrant plum bags contain 5 faded blue bags, 6 dotted black bags.
+  faded blue bags contain no other bags.
+  dotted black bags contain no other bags.
+#+END_SRC
+
+
+#+BEGIN_SRC text :results output code
+  dull gold bags contain 1 light tomato bag, 4 striped lavender bags, 2 shiny tomato bags, 2 plaid lime bags.
+  posh lavender bags contain 5 light magenta bags, 1 dim lime bag, 1 vibrant red bag, 1 light purple bag.
+#+END_SRC
+
+#+BEGIN_SRC clojure :results output code
+  (ns day-7.day7)
+
+
+  ;; Guesses
+  ;; 6
+  ;; (You guessed 17.)
+
+
+
+  (def text
+    "dull gold bags contain 1 light tomato bag, 4 striped lavender bags, 2 shiny tomato bags, 2 plaid lime bags.
+  posh lavender bags contain 5 light magenta bags, 1 dim lime bag, 1 vibrant red bag, 1 light purple bag.
+  vibrant plum bags contain 5 faded blue bags, 6 dotted black bags.
+  light blue bags contain 4 shiny gold bags, 5 dotted beige bags, 1 dim brown bag, 2 shiny fuchsia bags.
+  faded blue bags contain no other bags.")
+
+
+  (defn keys-in
+    "Returns a sequence of all key paths in a given map using DFS walk."
+    [m]
+    (letfn [(children [node]
+              (let [v (get-in m node)]
+                (if (map? v)
+                  (map (fn [x] (conj node x)) (keys v))
+                  [])))
+            (branch? [node] (-> (children node) seq boolean))]
+      (->> (keys m)
+           (map vector)
+           (mapcat #(tree-seq branch? children %)))))
+
+
+
+  (count (clojure.string/split (slurp "src/day_7/input.txt") #"\n"))
+
+  (->> (clojure.string/split (slurp "src/day_7/input.txt") #"\n")
+       (remove #(clojure.string/includes? % "no other bags"))
+       (map (fn [x]
+              (let [[_ big-bag rest] (re-find #"^(\w+\s\w+)\sbags\scontain\s(.*)$" x)]
+                {big-bag (->> (re-seq #"(\d)\s(\w+\s\w+)" rest)
+                              (map (juxt last (comp #(Integer. %) second)))
+                              (into {}))})))
+       ()
+       (into {})
+       ;; clojure.walk/postwalk-demo
+       ;; clojure.walk/prewalk-demo
+       keys-in
+       (map set)
+       (filter #(contains? % "shiny gold"))
+       (flatten)
+       (into #{})
+       )
+
+  ;; 584
+  ;; 584
+
+  (let [a ]
+    (+ (->> a
+            (map (comp (partial into {}) vals))
+            (filter #(and (contains? % "shiny gold")
+                          (<= 1 (get % "shiny gold"))
+                          ))
+            #_(reduce (fn [sum x] (+ sum (get x "shiny gold"))) 0))
+       #_(->> a
+            (filter (comp #{"shiny gold"} ffirst))
+            (count)
+            ))
+    #_(count a)
+    )
+
+  (ffirst {"vibrant orange" {"dim cyan" 3, "shiny gold" 1, "shiny salmon" 1}})
+
+  (map
+   (comp #(contains? % "shiny gold") (partial into {}) vals)
+   [{"vibrant orange" {"dim cyan" 3, "shiny gold" 1, "shiny salmon" 1}}]
+   )
+
+  (->> '({"vibrant orange" {"dim cyan" 3, "shiny gold" 1, "shiny salmon" 1}}
+         {"dull orange" {"striped beige" 2, "posh cyan" 2, "shiny gold" 2}}
+         {"shiny tan" {"shiny gold" 1}}
+         {"vibrant indigo"
+          {"dim violet" 3, "pale yellow" 3, "pale indigo" 1, "shiny gold" 5}}
+         {"vibrant plum" {"dull turquoise" 3, "shiny gold" 3, "dark black" 5}}
+         {"shiny gold"
+          {"shiny gold" 4, "dotted beige" 5, "dim brown" 1, "shiny fuchsia" 2}})
+       (filter (comp #(contains? % "shiny gold") set keys))
+       )
+
+  ()
+
+  (keys {"vibrant orange" {"dim cyan" 3, "shiny gold" 1, "shiny salmon" 1}})
+
+  (into {} (vals
+           {"dull gold"
+            {"light tomato" 1, "striped lavender" 4, "shiny tomato" 2, "plaid lime" 2}}))
+
+
+  Integer/parseInt
+
+  (Integer. "1")
+
+  (->> (re-seq #"(\d)\s(\w+\s\w+)" "1 light tomato bag, 4 striped lavender bags, 2 shiny tomato bags, 2 plaid lime bags.")
+       (map (juxt last second))
+       )
+
+  (let [[_ n color] ]
+    )
+
+  (->>
+       ;; flatten
+       ;; set
+       )
+
+
+  (re-find #"^([a-z]+ [a-z]+) bags ((contain no other)|((\d) ([a-z]+ [a-z]+)))" "faded blue bags contain no other bags.")
+
+
+  (re-find #"^([a-z]+ [a-z]+) bags[, .]+((contain no other)?|((\d) ([a-z]+ [a-z]+)))" "posh lavender bags contain 5 light magenta bags, 1 dim lime bag, 1 vibrant red bag, 1 light purple bag.")
+
+
+
+  (re-find #"^(\w+\s\w+)\sbags.*$" "posh lavender bags contain 5 light magenta bags, 1 dim lime bag, 1 vibrant red bag, 1 light purple bag.")
+
+  (re-find #"(\s?(\d) (\w+\s\w+) bags])" "5 light magenta bags")
+
+  (re-find #"(\s?(\d) (\w+\s\w+) bags]).*" " 5 light magenta bags, 1 dim lime bag, 1 vibrant red bag, 1 light purple bag.")
+
+
+  "dull gold bags contain 1 light tomato bag, 4 striped lavender bags, 2 shiny tomato bags, 2 plaid lime bags."
+
+  (re-find #"^(\w+\s\w+)\sbags\scontain(.*)$" "posh lavender bags contain 5 light magenta bags, 1 dim lime bag, 1 vibrant red bag, 1 light purple bag.")
+
+#+END_SRC
