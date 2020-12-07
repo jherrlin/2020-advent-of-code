@@ -31,7 +31,7 @@ dark violet bags contain no other bags.")
   {:id    s
    :count i})
 
-(def ds (->> (clojure.string/split test-input-2 #_(slurp "src/day_7/input.txt") #"\n")
+(def ds (->> (clojure.string/split #_test-input-2 (slurp "src/day_7/input.txt") #"\n")
              (map (fn [s]
                     (if (clojure.string/includes? s "no other bags.")
                       (leaf s)
@@ -50,22 +50,21 @@ dark violet bags contain no other bags.")
 
 ds
 
-{"shiny gold" {:id "shiny gold", :children {"dark red" 2}},
- "dark red" {:id "dark red", :children {"dark orange" 2}},
- "dark orange" {:id "dark orange", :children {"dark yellow" 2}},
- "dark yellow" {:id "dark yellow", :children {"dark green" 2}},
- "dark green" {:id "dark green", :children {"dark blue" 2}},
- "dark blue" {:id "dark blue", :children {"dark violet" 2}},
- "dark violet" {:id "dark violet", :leaf true}}
+
 
 
 (def abc (clojure.walk/prewalk
           (fn [{:keys [id children] :as x}]
             (println x)
-            (if (and (map? x) children)
-              (assoc x :children (flatten (map (fn [[id count]] (for [_ (range count)] (get ds id))) children)))
+            (if (and (map? x) children id)
+              (assoc x :children  (into {} (mapcat (fn [[id count]]
+                                                     (for [_ (range count)]
+                                                       {(java.util.UUID/randomUUID) (get ds id)})) children)))
               x))
           (get-in ds ["shiny gold"])))
+
+{:id "vibrant plum", :children {"faded blue" 5,
+                                "dotted black" 6}}
 
 (def state (atom 0))
 (dec @state)
