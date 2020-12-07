@@ -1,0 +1,46 @@
+
+
+
+light red bags contain 1 bright white bag, 2 muted yellow bags.
+dark orange bags contain 3 bright white bags, 4 muted yellow bags.
+bright white bags contain 1 shiny gold bag.
+muted yellow bags contain 2 shiny gold bags, 9 faded blue bags.
+shiny gold bags contain 1 dark olive bag, 2 vibrant plum bags.
+dark olive bags contain 3 faded blue bags, 4 dotted black bags.
+vibrant plum bags contain 5 faded blue bags, 6 dotted black bags.
+faded blue bags contain no other bags.
+dotted black bags contain no other bags.
+
+
+
+
+| 1 shiny gold | 1 dark olive   | 3 faded blue   |
+|              |                | 4 dotted black |
+|              | 2 vibrant plum | 5 faded blue   |
+|              |                | 6 dotted black |
+|              |                |                |
+|              |                |                |
+
+
+
+
+
+
+shiny gold
+- faded blue bags contain 0 other bags.                                                           1
+- dotted black bags contain 0 other bags.                                                         1
+- vibrant plum bags contain 11 other bags: 5 faded blue bags and 6 dotted black bags.             1 + 11
+- dark olive bags contain 7 other bags: 3 faded blue bags and 4 dotted black bags.                1 + 1*7
+
+
+
+
+#+BEGIN_SRC clojure :results output code
+  {:node "shiny gold"
+   :count }
+#+END_SRC
+
+
+#+BEGIN_SRC clojure :results output code
+
+#+END_SRC
