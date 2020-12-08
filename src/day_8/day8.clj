@@ -26,13 +26,12 @@ acc +6")
 
 (defn parse [idx s]
   (let [[_ op sign value] (re-find #"^(\w{3})\s([-+])(\d+)$" s)]
-    [idx (keyword op) (symbol sign) (Integer. value) false 0 0]))
+    [idx (keyword op) (symbol sign) (Integer. value) false 0]))
 
-(defn run [instructions idx sum counter nj-counter change-nj-on]
-  (let [this                              (get instructions idx)
-        [idx op sign value executed? _ _] (get instructions idx)]
+(defn run [instructions idx sum nj-counter change-nj-on]
+  (let [[idx op sign value executed? _] (get instructions idx)]
     (if (or (nil? idx) executed?)
-      [(get-in instructions [(dec (count instructions)) 4])            ;; last instruction
+      [(get-in instructions [(dec (count instructions)) 4])
        sum
        instructions]
       (let [op (if-not (and (= nj-counter change-nj-on)
@@ -40,29 +39,31 @@ acc +6")
                  op
                  (case op :nop :jmp :jmp :nop))]
         (run
-          (-> instructions
-              (assoc-in [idx 1] op)
-              (assoc-in [idx 4] true)             ;; Executed
-              (assoc-in [idx 5] counter)          ;; Counter
-              (assoc-in [idx 6] nj-counter))      ;; nop jmp counter
+          (-> instructions                        ;; Update instruction
+              (assoc-in [idx 1] op)               ;; Set op as it may have changed
+              (assoc-in [idx 4] true))            ;; Executed?
           (case op :nop (inc idx) :acc (inc idx) :jmp ((eval sign) idx value))
           (case op :acc ((eval sign) sum value) sum)
-          (inc counter)
           (case op :acc nj-counter (inc nj-counter))
           change-nj-on)))))
 
-(def p-run (partial
-            run
-            (->> (clojure.string/split #_test-input2 (slurp "src/day_8/input.txt") #"\n") (map-indexed (fn [idx m] (parse idx m))) (vec))
-            0 0 0 0))
+(def p-run
+  (partial
+   run
+   (->> (clojure.string/split (slurp "src/day_8/input.txt") #"\n")
+        (map-indexed (fn [idx m] (parse idx m))) (vec))
+   0 0 0))
 
-(p-run 1)
+;; First problem
+(second (p-run -1))
 
-(->> (p-run -1)
-     last
-     (filter (comp #{:jmp :nop} second))
-     (sort-by last #(compare %2 %1))
-     (count)
-     (range)
-     (map #(p-run %))
-     (filter (comp true? first)))
+;; Second Problem
+(->> (p-run -1)                          ;; Run without op manipulation
+     last                                ;; Get the instruction vector
+     (filter (comp #{:jmp :nop} second)) ;; Filter the jmp and nop instructins
+     (count)                             ;; Count the number of jmp and nop instructions
+     (range)                             ;; Create a range from the number of jmp and nop instr
+     (map #(p-run %))                    ;; Run with op manipulation on range number N
+     (filter (comp true? first))         ;; Filter the result that finished to last instruction
+     (first)                             ;; Take the first result
+     (second))                           ;; Find the accumulated value
