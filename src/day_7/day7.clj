@@ -45,6 +45,7 @@ dotted black bags contain no other bags.")
 
 
 
+
 ;; =============== Second ===============
 ;; Correct answer: 8030
 (def state (atom 0))
@@ -82,3 +83,27 @@ dotted black bags contain no other bags.")
 
 (dec @state)
 ;; =============== Second ===============
+
+
+;; =============== Second, attempt 2 ===============
+(defn bag-walk [bags counter m]
+  (if-not (and (map? m) (every? number? (vals m)))
+    m
+    (->> m
+         (mapcat
+          (fn [[k v]]
+            (for [_    (range v)
+                  :let [_ (swap! counter inc)]]
+              {(str k "-" (java.util.UUID/randomUUID))
+               (get bags k)})))
+         (into {}))))
+
+(defn walk-the [bags start]
+  (let [counter (atom 0)
+        x       (clojure.walk/prewalk
+                 (partial bag-walk bags counter)
+                 start)]
+    [@counter x]))
+
+(walk-the bags (get bags "shiny gold"))
+;; =============== Second, attempt 2 ===============
