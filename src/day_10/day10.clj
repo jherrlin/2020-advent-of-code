@@ -1,60 +1,11 @@
 (ns day-10.day10)
 
 
-(def test-input "16
-10
-15
-5
-1
-11
-7
-19
-6
-12
-4
-")
-
-(def test-input2
-  "28
-33
-18
-42
-31
-14
-46
-20
-48
-47
-24
-23
-49
-45
-19
-38
-39
-11
-1
-32
-25
-35
-8
-17
-7
-9
-4
-2
-34
-10
-3")
-
-
 ;; ============ First ============
 (def input-values
-  (->> (clojure.string/split test-input2 #_(slurp "src/day_10/input.txt") #"\n")
+  (->> (clojure.string/split (slurp "src/day_10/input.txt") #"\n")
        (map #(Long/Long/parseLong %))
        (sort)))
-
-(range 0 (count input-values))
 
 (def ds
   (loop [[this & rest] (concat (concat [0] input-values)
@@ -65,10 +16,10 @@
         (nil? rest) results
         :else (recur rest (update results (- next this) (fnil inc 0)))))))
 
-
 ;; First
 (* (get ds 3)
    (get ds 1))
+;; 2475
 ;; ============ First ============
 
 
@@ -81,11 +32,6 @@
     (->> (concat (concat [0] v)
                  [(+ 3 (apply max v))])
          (sort))))
-
-
-(def parsed-input (parse-input-values (slurp "src/day_10/input.txt")))
-(def parsed-test-input (parse-input-values test-input))
-(def parsed-test-input2 (parse-input-values test-input2))
 
 (defn adapters-map [v]
   (->> v
@@ -104,11 +50,6 @@
         (nil? this-adapter)                   arrangements
         (#{(apply max segment)} this-adapter) (recur (into rest inner-adapters) (inc arrangements))
         :else                                 (recur (into rest inner-adapters) arrangements)))))
-
-(def adapters-map-input (adapters-map parsed-input))
-(def adapters-map-test-input (adapters-map parsed-test-input))
-(def adapters-map-test-input2 (adapters-map parsed-test-input2))
-
 
 (defn segments
   "Split the vector up into segments.
@@ -131,11 +72,19 @@
         (concat result (list lst))
         (recur (drop-while (complement #{point}) lst) rest (concat result [(take-while (complement #{point}) lst)]))))))
 
-
 (comment
-  ;;
+  ;; Solution:
+  (def parsed-input (parse-input-values (slurp "src/day_10/input.txt")))
+  (def adapters-map-input (adapters-map parsed-input))
   (->> parsed-input
        (segments)
        (map (partial adapters-chain adapters-map-input))
        (reduce *))
+
+  ;; Answer: 442136281481216
+
+  ;; The major part of this solution is to do the segmentation.
+  ;; '(1 2 3    7 8 9   11)    =>
+  ;; '((1 2 3) (7 8 9) (11))
+  ;; The do the adapter-chain on each segment and the reduce * on them.
   )
