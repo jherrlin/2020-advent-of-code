@@ -54,9 +54,6 @@
        (map #(Long/Long/parseLong %))
        (sort)))
 
-
-
-
 (range 0 (count input-values))
 
 (def ds
@@ -102,35 +99,22 @@
   [adapters segment]
   (loop [[this-adapter & rest] [(apply min segment)]
          arrangements          0]
-    (let [inner-adapters (keys (get adapters this-adapter))]
+    (let [inner-adapters (keys (get (select-keys adapters segment) this-adapter))]
       (cond
         (nil? this-adapter)                   arrangements
         (#{(apply max segment)} this-adapter) (recur (into rest inner-adapters) (inc arrangements))
         :else                                 (recur (into rest inner-adapters) arrangements)))))
 
-(def adapters-map-test-input2 (adapters-map parsed-test-input2))
+(def adapters-map-input (adapters-map parsed-input))
 (def adapters-map-test-input (adapters-map parsed-test-input))
-
-(->> parsed-test-input
-     (partition-all 2)
-     (map (partial adapters-chain adapters-map-test-input2))
-     )
-
-(map (partial adapters-chain adapters-map-test-input)
-     '((0 1) (4 5 6 7) (10 11 12) (15 16) (19 22)))
+(def adapters-map-test-input2 (adapters-map parsed-test-input2))
 
 
-(->> (map (partial adapters-chain adapters-map-test-input2)
-          '((0 1 2 3 4) (7 8 9 10 11) (14) (17 18 19 20) (23 24 25) (28) (31 32 33 34 35)
-            (38 39) (42) (45 46 47 48 49) (52)))
-     (reduce *)
-     )
-
-;; [0 1 2 3 4 7 8 9 10 11 14 17 18 19 20 23 24 25 28 31 32 33 34 35 38 39 42 45 46 47 48 49 52]
-
-
-
-(defn segments [all-values]
+(defn segments
+  "Split the vector up into segments.
+  '(1 2 3    7 8 9   11)    =>
+  '((1 2 3) (7 8 9) (11))"
+  [all-values]
   (let [values (vec (sort all-values))
         at (reduce (fn [coll [idx v]]
                      (if-let [next-value (get values (inc idx))]
@@ -148,18 +132,10 @@
         (recur (drop-while (complement #{point}) lst) rest (concat result [(take-while (complement #{point}) lst)]))))))
 
 
-
-;; 19208
 (comment
-
+  ;;
+  (->> parsed-input
+       (segments)
+       (map (partial adapters-chain adapters-map-input))
+       (reduce *))
   )
-(map (fn [a b]
-       (* a b))
-     '(4 2 1 2 1 4 1 4 1)
-     (range 1 (inc (count '(4 2 1 2 1 4 1 4 1)))))
-
-(reduce * '(4 4 3 8 5 24 7 32 9))
-
-
-(map #(* 3 %) '(7 7 4 2 4 2 1))
-(/ (reduce * '(21 21 12 6 12 6 3)) 3)
