@@ -72,14 +72,34 @@
         (concat result (list lst))
         (recur (drop-while (complement #{point}) lst) rest (concat result [(take-while (complement #{point}) lst)]))))))
 
+(def test-input "16
+10
+15
+5
+1
+11
+7
+19
+6
+12
+4")
+
 (comment
   ;; Solution:
   (def parsed-input (parse-input-values (slurp "src/day_10/input.txt")))
   (def adapters-map-input (adapters-map parsed-input))
-  (->> parsed-input
-       (segments)
-       (map (partial adapters-chain adapters-map-input))
-       (reduce *))
+
+  (let [parsed-input (parse-input-values test-input #_(slurp "src/day_10/input.txt"))
+        adapters-map (adapters-map parsed-input)]
+    (->> parsed-input
+         (segments)                                    ;; ((0 1) (4 5 6 7) (10 11 12) (15 16) (19) (22))
+         (map (partial adapters-chain adapters-map))   ;; ( 1     4         2          1       1    1)
+         (reduce *)
+         ))
+
+
+  '((0 1) (3 4 5 6 7) (10 11 12) (15 16) (19) (22))
+  (1 7 2 1 1 1)
 
   ;; Answer: 442136281481216
 
