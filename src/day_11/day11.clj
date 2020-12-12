@@ -49,6 +49,24 @@ L.LLLLL.LL")
     (and (#{"#"} current) (< 3 occupied)) "L"
     :else                                 current))
 
+(defn next-w  [[x y] gen] (when-let [_ (get-in gen [y       (dec x)])] [(dec x)      y ]))
+(defn next-nw [[x y] gen] (when-let [_ (get-in gen [(dec y) (dec x)])] [(dec x) (dec y)]))
+(defn next-n  [[x y] gen] (when-let [_ (get-in gen [(dec y)      x ])] [     x  (dec y)]))
+(defn next-ne [[x y] gen] (when-let [_ (get-in gen [(dec y) (inc x)])] [(inc x) (dec y)]))
+(defn next-e  [[x y] gen] (when-let [_ (get-in gen [     y  (inc x)])] [(inc x)      y]))
+(defn next-se [[x y] gen] (when-let [_ (get-in gen [(inc y) (inc x)])] [(inc x) (inc y)]))
+(defn next-s  [[x y] gen] (when-let [_ (get-in gen [(inc y)       x])] [     x  (inc y)]))
+(defn next-sw [[x y] gen] (when-let [_ (get-in gen [(inc y) (dec x)])] [(dec x) (inc y)]))
+
+(next-w[0 2]
+       [[0 0 0 0 0]
+        [0 0 0 0 0]
+        [0 0 0 0 0]
+        [0 0 0 0 0]
+        [0 0 0 0 0]])
+
+(defn look-w [[x y] generation])
+
 (defn occupied    [v]          (count (filter #{"#"} v)))
 (defn game-width  [generation] (count (first generation)))
 (defn game-height [generation] (count generation))
