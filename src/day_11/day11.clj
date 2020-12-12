@@ -49,12 +49,12 @@ L.LLLLL.LL")
     (and (#{"#"} current) (< 3 occupied)) "L"
     :else                                 current))
 
-(defn occupied [v] (count (filter #{"#"} v)))
+(defn occupied    [v]          (count (filter #{"#"} v)))
 (defn game-width  [generation] (count (first generation)))
 (defn game-height [generation] (count generation))
 
 (defn next-individual-idx [[x y] generation]
-  (let [width (game-width generation)
+  (let [width  (game-width generation)
         height (game-height generation)]
     [(mod (inc x) width)
      (mod (+ y (quot (inc x) width)) height)]))
